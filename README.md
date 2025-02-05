@@ -8,30 +8,30 @@ Answer the following prediction questions:
 1. Look at `resources/stolen_bikes.csv`.
 
     - How many fields are present? 
-        > Your answer
+        > 15 Fields
 
     - How many records are present?
-        > Your answer
+        > 8,986 Records
 
     - What types of data are the fields (strings, ints, etc.)?
-        > Your answer
+        > Strings, Ints, Floast, Boolean
 
 
 2. Look at the `get_records()` function. 
 
     - How many and what type of arguments does it take?
-        > Your answer
+        > 1 and String
 
     - What does the function return?
-        > Your answer
+        > A list
 
 3. What would the program print out when run?
-    > Your answer
+    > The first record
 
 ## Run
 Run the program. 
 1. Does the program's output match what you expected? If not, what were the differences?
-    > Your answer
+    > Kinda, differences:  The amount of records read in and the district where it occured
 
 ## Investigate
 View the instructor's [presentation](https://docs.google.com/presentation/d/186dvW8FcyGPVWGNRolW7RLBhoDX1yBZCGrQT-tGRUuM/edit#slide=id.g32e76c66631_0_7) about CSV files and lists and dictionaries.
@@ -44,4 +44,3 @@ Write a function that will help you answer the question: *In which district were
 
 ### Recommendation
 Write a function `get_count_by_district(records: list[dict[str, Union[str,int]]]) -> dict[str, int])`. This function takes a record list, will return a dictionary where the keys are the districts and the values are the counts.
-

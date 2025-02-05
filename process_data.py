@@ -27,9 +27,26 @@ def get_records(data_filename: str) -> list[dict[str, Union[str, int]]]:
 
   return records
 
+def convert_fields(records: list[dict[str, Union[str, int]]]) -> None:
+  for record in records:
+    record["REPORTYEAR"] = int(record["REPORTYEAR"])
+    record["PropValue"] = int(record["PropVal"])
+
+def calculate_average(records, k: str) -> float:
+  total: int = 0
+  for record in records:
+    total += record[k]
+  
+  return total / len(records)
+
+
 def main() -> None:
   data_filename: str = "resources/stolen_bikes.csv"
   records: list[dict[str, Union[str, int]]] = get_records(data_filename)
+
+  convert_fields(records)
+  avg: float = calculate_average(records, "Propval")
+
 
   print(f"{len(records)} records read in.")
   print(records[0])
