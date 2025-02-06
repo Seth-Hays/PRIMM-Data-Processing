@@ -9,7 +9,9 @@ name - date
 import csv
 from typing import Union
 
-def get_records(data_filename: str) -> list[dict[str, Union[str, int]]]:
+record = dict[str, Union[str, int, float]]
+
+def get_records(data_filename: str) -> list[record]:
   """
   Gets records from a csv data file.
   Parameters:
@@ -19,7 +21,7 @@ def get_records(data_filename: str) -> list[dict[str, Union[str, int]]]:
         record is a dictionary where the keys are strings 
         and the values can be int or str
   """
-  records: list[dict[str,Union[str, int]]] = []
+  records: list[record] = []
   with open(data_filename, "r", encoding='utf-8-sig') as data_file:
     reader: csv.DictReader = csv.DictReader(data_file)
     for record in reader:      
@@ -27,10 +29,9 @@ def get_records(data_filename: str) -> list[dict[str, Union[str, int]]]:
 
   return records
 
-def convert_fields(records: list[dict[str, Union[str, int]]]) -> None:
+def convert_fields(records: list[record]) -> None:
   for record in records:
     record["REPORTYEAR"] = int(record["REPORTYEAR"])
-    record["PropValue"] = int(record["PropVal"])
 
 def calculate_average(records, k: str) -> float:
   total: int = 0
@@ -40,14 +41,29 @@ def calculate_average(records, k: str) -> float:
   return total / len(records)
 
 
+def summarize_by_month(records: list[record]) -> dict[str, int]:
+  summary: dict[str, int] = {} # Setup empty dictonary
+  
+  for r in records:
+    month: str = r["REPORTDATE"][5:7] # GRAB MONTH
+    if month in summary:
+      summary[month] += 1
+    else:
+      summary[month] = 1
+
+  return summary
+
+
 def main() -> None:
   data_filename: str = "resources/stolen_bikes.csv"
-  records: list[dict[str, Union[str, int]]] = get_records(data_filename)
-
+  records: list[record] = get_records(data_filename)
   convert_fields(records)
-  avg: float = calculate_average(records, "Propval")
 
 
+  summary: dict[str, int] = summarize_by_month(records)
+
+  for month in summary.keys():
+    print(f"{month}: {summary[month]}")
   print(f"{len(records)} records read in.")
   print(records[0])
   print(records[0]["District"])
