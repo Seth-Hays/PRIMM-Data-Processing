@@ -31,7 +31,7 @@ def get_records(data_filename: str) -> list[record]:
 
 def convert_fields(records: list[record]) -> None:
   for record in records:
-    record["REPORTYEAR"] = int(record["REPORTYEAR"])
+    record["SHIFT"] = record["SHIFT"]
 
 def calculate_average(records, k: str) -> float:
   total: int = 0
@@ -41,32 +41,54 @@ def calculate_average(records, k: str) -> float:
   return total / len(records)
 
 
-def summarize_by_month(records: list[record]) -> dict[str, int]:
+
+def summarize_by_shift(records: list[record]) -> dict[str, int]:
   summary: dict[str, int] = {} # Setup empty dictonary
   
   for r in records:
-    month: str = r["REPORTDATE"][5:7] # GRAB MONTH
-    if month in summary:
-      summary[month] += 1
+    shift: str = r["SHIFT"]
+    if shift in summary:
+      summary[shift] += 1
     else:
-      summary[month] = 1
+      summary[shift] = 1
 
   return summary
 
 
+def summarize_by_time(records: list[record]) -> dict[str, int]:
+  summary: dict[str, int] = {}
+
+  for r in records:
+    time: str = r["REPORT_DAT"][11:15]
+    hour, _ = time.split(":")
+    
+    if hour in summary:
+      summary[hour] += 1
+    else:
+      summary[hour] = 1
+  
+  return summary
+    
+
+
 def main() -> None:
-  data_filename: str = "resources/stolen_bikes.csv"
+  data_filename: str = "resources/Crimes.csv"
   records: list[record] = get_records(data_filename)
   convert_fields(records)
 
 
-  summary: dict[str, int] = summarize_by_month(records)
+  shift: dict[str, int] = summarize_by_shift(records)
+  time: dict[str, int] = summarize_by_time(records)
 
-  for month in summary.keys():
-    print(f"{month}: {summary[month]}")
+  for daytime in shift.keys():
+    print(f"{daytime}: {shift[daytime]}")
+
+  for hour in time.keys():
+    print(f"{hour}: {time[hour]}")
+
   print(f"{len(records)} records read in.")
-  print(records[0])
-  print(records[0]["District"])
+
+
 
 
 if __name__ == "__main__":
