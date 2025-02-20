@@ -29,9 +29,13 @@ def get_records(data_filename: str) -> list[record]:
 
   return records
 
+
 def convert_fields(records: list[record]) -> None:
   for record in records:
     record["SHIFT"] = record["SHIFT"]
+  for record in records:
+    record["OFFENSE"] = record["OFFENSE"]
+
 
 def calculate_average(records, k: str) -> float:
   total: int = 0
@@ -70,6 +74,19 @@ def summarize_by_time(records: list[record]) -> dict[str, int]:
   return summary
     
 
+def summarize_by_crime(records: list[record]) -> dict[str, int]:
+  summary: dict[str, int] = {} # Setup empty dictonary
+  
+  for r in records:
+    crime: str = r["OFFENSE"]
+    if crime in summary:
+      summary[crime] += 1
+    else:
+      summary[crime] = 1
+
+  return summary
+
+
 
 def main() -> None:
   data_filename: str = "resources/Crimes.csv"
@@ -79,14 +96,19 @@ def main() -> None:
 
   shift: dict[str, int] = summarize_by_shift(records)
   time: dict[str, int] = summarize_by_time(records)
+  crime: dict[str, int] = summarize_by_crime(records)
+
 
   for daytime in shift.keys():
     print(f"{daytime}: {shift[daytime]}")
 
   for hour in time.keys():
     print(f"{hour}: {time[hour]}")
+  
+  for count in crime.keys():
+    print(f"{count}:{crime[count]}")
 
-  print(f"{len(records)} records read in..")
+  print(f"{len(records)} records read in...")
 
 
 
