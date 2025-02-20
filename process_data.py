@@ -86,7 +86,7 @@ def main() -> None:
   for hour in time.keys():
     print(f"{hour}: {time[hour]}")
 
-  print(f"{len(records)} records read in.")
+  print(f"{len(records)} records read in..")
 
 
 
