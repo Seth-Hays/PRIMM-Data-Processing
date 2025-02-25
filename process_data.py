@@ -3,7 +3,7 @@ PRIMM: Python Data Processing
 In this PRIMM Activity, you'll learn how to process a 
 CSV file and complete some basic extraction techniques.
 
-name - date
+Seth Hays - February
 """
 
 import csv
@@ -33,7 +33,6 @@ def get_records(data_filename: str) -> list[record]:
 def convert_fields(records: list[record]) -> None:
   for record in records:
     record["SHIFT"] = record["SHIFT"]
-  for record in records:
     record["OFFENSE"] = record["OFFENSE"]
 
 
@@ -43,7 +42,6 @@ def calculate_average(records, k: str) -> float:
     total += record[k]
   
   return total / len(records)
-
 
 
 def summarize_by_shift(records: list[record]) -> dict[str, int]:
@@ -87,6 +85,38 @@ def summarize_by_crime(records: list[record]) -> dict[str, int]:
   return summary
 
 
+def summarize_by_duration(records: list[record]) -> float:
+  hour_difference: int = 0
+  minute_difference: int = 0
+  average: float = 0.0
+  
+  count: int = 1
+  for r in records:
+    print(count)
+    if r["END_DATE"] != "":
+      start_hour: int = int(r["START_DATE"][11:13])
+      start_minute: int = int(r["START_DATE"][14:16])
+      end_hour: int = int(r["END_DATE"][11:13])
+      end_minute: int = int(r["END_DATE"][14:16])
+      count += 1
+
+
+      hour_difference = end_hour - start_hour
+
+      if hour_difference < 0:
+        print(r)
+
+      if end_minute > start_minute:
+        minute_difference = end_minute - start_minute
+      elif end_minute < start_minute:
+        minute_difference = start_minute - end_minute
+      else:
+        minute_difference = 0
+      
+      average = (hour_difference * 60) + minute_difference
+    
+    return average
+
 
 def main() -> None:
   data_filename: str = "resources/Crimes.csv"
@@ -97,6 +127,7 @@ def main() -> None:
   shift: dict[str, int] = summarize_by_shift(records)
   time: dict[str, int] = summarize_by_time(records)
   crime: dict[str, int] = summarize_by_crime(records)
+  duration: float = summarize_by_duration(records)
 
 
   for daytime in shift.keys():
@@ -107,6 +138,8 @@ def main() -> None:
   
   for count in crime.keys():
     print(f"{count}:{crime[count]}")
+  
+  print(f"The average crime duration for all crimes is: {duration} minutes")
 
   print(f"{len(records)} records read in...")
 
