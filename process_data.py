@@ -85,39 +85,97 @@ def summarize_by_crime(records: list[record]) -> dict[str, int]:
   return summary
 
 
-def summarize_by_duration(records: list[record]) -> float:
+def calculate_duration(crimes) -> float:
   hour_difference: int = 0
   minute_difference: int = 0
   average: float = 0.0
-  
-  count: int = 1
-  for r in records:
-    print(count)
-    if r["END_DATE"] != "":
-      start_hour: int = int(r["START_DATE"][11:13])
-      start_minute: int = int(r["START_DATE"][14:16])
-      end_hour: int = int(r["END_DATE"][11:13])
-      end_minute: int = int(r["END_DATE"][14:16])
-      count += 1
+  empty: str = ""
+  crime: str = ""
 
+  for i in range(len(crimes)):
+    empty = crimes[i]
+    empty = empty[6:8]
 
-      hour_difference = end_hour - start_hour
+    if empty != "":
+        crime = crimes[i]
 
-      if hour_difference < 0:
-        print(r)
+        start_hour: int = int(crime[0:2])
+        start_minute: int = int(crime[3:5])
+        end_hour: int = int(crime[6:8])
+        end_minute: int = int(crime[9:11])
 
-      if end_minute > start_minute:
-        minute_difference = end_minute - start_minute
-      elif end_minute < start_minute:
-        minute_difference = start_minute - end_minute
-      else:
-        minute_difference = 0
-      
-      average = (hour_difference * 60) + minute_difference
+        hour_difference = end_hour - start_hour
+
+        if end_minute > start_minute:
+          minute_difference = end_minute - start_minute
+        elif end_minute < start_minute:
+          minute_difference = start_minute - end_minute
+        else:
+          minute_difference = 0
+        
+        average += (hour_difference * 60) + minute_difference
     
+    average = average / len(crimes)
     return average
 
 
+def summarize_by_duration(records: list[record]) -> float:  
+  theft_auto: list[str] = []
+  theft_other: list[str] = []
+  homicide: list[str] = []
+  motor_theft: list[str] = []
+  robbery: list[str] = []
+  assault: list[str] = []
+  arson: list[str] = []
+  burglary: list[str] = []
+  sa: list[str] = []
+  crime_count: dict[str, float] = {'THEFT F/AUTO' : 0.0, 'THEFT/OTHER' : 0.0, 'HOMICIDE' : 0.0, 'MOTOR VEHICLE THEFT' : 0.0, 'ROBBERY' : 0.0, 'ASSAULT W/DANGEROUS WEAPON' : 0.0, 'ARSON' : 0.0, 'BURGLARY' : 0.0, 'SA' : 0.0}
+  crime: str = ""
+
+  for r in records:
+    crime = r['OFFENSE']
+
+    # Adding all the start and end times to a list
+    if crime == "THEFT F/AUTO":
+      theft_auto.append(f"{r["START_DATE"][11:13]} {r["START_DATE"][14:16]} {r["END_DATE"][11:13]} {r["END_DATE"][14:16]}")
+
+    elif crime == "THEFT/OTHER":
+      theft_other.append(f"{r["START_DATE"][11:13]} {r["START_DATE"][14:16]} {r["END_DATE"][11:13]} {r["END_DATE"][14:16]}")
+    
+    elif crime == "HOMICIDE":
+      homicide.append(f"{r["START_DATE"][11:13]} {r["START_DATE"][14:16]} {r["END_DATE"][11:13]} {r["END_DATE"][14:16]}")
+
+    elif crime == "MOTOR VEHICLE THEFT":
+      motor_theft.append(f"{r["START_DATE"][11:13]} {r["START_DATE"][14:16]} {r["END_DATE"][11:13]} {r["END_DATE"][14:16]}")
+
+    elif crime == "ROBBERY":
+      robbery.append(f"{r["START_DATE"][11:13]} {r["START_DATE"][14:16]} {r["END_DATE"][11:13]} {r["END_DATE"][14:16]}")
+
+    elif crime == "ASSAULT W/DANGEROUS WEAPON":
+      assault.append(f"{r["START_DATE"][11:13]} {r["START_DATE"][14:16]} {r["END_DATE"][11:13]} {r["END_DATE"][14:16]}")  
+
+    elif crime == "ARSON":
+      arson.append(f"{r["START_DATE"][11:13]} {r["START_DATE"][14:16]} {r["END_DATE"][11:13]} {r["END_DATE"][14:16]}")
+
+    elif crime == "BURGLARY":
+      burglary.append(f"{r["START_DATE"][11:13]} {r["START_DATE"][14:16]} {r["END_DATE"][11:13]} {r["END_DATE"][14:16]}")
+      
+    else:
+      sa.append(f"{r["START_DATE"][11:13]} {r["START_DATE"][14:16]} {r["END_DATE"][11:13]} {r["END_DATE"][14:16]}")
+    
+    crime_count['THEFT F/AUTO'] = (calculate_duration(theft_auto))
+    crime_count['THEFT/OTHER'] = (calculate_duration(theft_other))
+    crime_count['HOMICIDE'] = (calculate_duration(homicide))
+    crime_count['MOTOR VEHICLE THEFT'] = (calculate_duration(motor_theft))
+    crime_count['ROBBERY'] =(calculate_duration(robbery))
+    crime_count['ASSAULT W/DANGEROUS WEAPON'] = (calculate_duration(assault))
+    crime_count['ARSON'] = (calculate_duration(arson))
+    crime_count['BURGLARY'] = (calculate_duration(burglary))
+    crime_count['SA'] = (calculate_duration(sa))
+
+    return crime_count
+
+    
 def main() -> None:
   data_filename: str = "resources/Crimes.csv"
   records: list[record] = get_records(data_filename)
@@ -127,19 +185,27 @@ def main() -> None:
   shift: dict[str, int] = summarize_by_shift(records)
   time: dict[str, int] = summarize_by_time(records)
   crime: dict[str, int] = summarize_by_crime(records)
-  duration: float = summarize_by_duration(records)
+  duration: dict[str, float] = summarize_by_duration(records)
 
 
   for daytime in shift.keys():
     print(f"{daytime}: {shift[daytime]}")
 
+  print("")
+
   for hour in time.keys():
     print(f"{hour}: {time[hour]}")
   
+  print("")
+
+
   for count in crime.keys():
     print(f"{count}:{crime[count]}")
   
-  print(f"The average crime duration for all crimes is: {duration} minutes")
+  print("")
+
+  for length in duration.keys():
+    print(f"{length}:{duration[length]} minutes")
 
   print(f"{len(records)} records read in...")
 
